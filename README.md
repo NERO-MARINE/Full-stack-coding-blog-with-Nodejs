@@ -1,4 +1,4 @@
-# CODE-WEB
+# Fullstack coding blog with nodejs and mongodb
 - node modules remove. run npm install
 - add your mongodb atlas connection string @ config/database_con.js
 - go to blog-routes.js and unprotect the signup page @ router.get('/signup') and router.post('/signup'). To do this, simply remove 'blogControllers.checkAuth,' on both routes
