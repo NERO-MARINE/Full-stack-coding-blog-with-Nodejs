@@ -3,6 +3,7 @@ const Post = require("../model/post");
 const User = require('../model/user');
 const bcryptjs = require('bcryptjs');
 const passport = require('passport');
+const mongoose = require('mongoose');
 //require passport file
 require('./passportlocals')(passport);
 
@@ -60,15 +61,19 @@ const categoriesContent = async(req, res) => {
 const postDetails = async(req,res)=>{
     try{
         const id = req.params.id;
+        if(!mongoose.Types.ObjectId.isValid(id)){
+             res.redirect('back');
+             return;
+        }
         const postName = req.params.postName;
         const postDetails = await Post.findById(id);
         const post_Names = await Post.find({category: postName}); 
         if(req.isAuthenticated()){
-          res.render('categories-content',{ title: 'Post content', postDetails, post_Names, loggedin: true,csrfToken: req.csrfToken()})
+          res.render('categories-content',{ title: `${postDetails.name}`, postDetails, post_Names, loggedin: true,csrfToken: req.csrfToken()})
 
          }
          else{
-          res.render('categories-content',{ title: 'Post content', postDetails, post_Names, loggedin: false,csrfToken: req.csrfToken()})
+          res.render('categories-content',{ title: `${postDetails.name}`, postDetails, post_Names, loggedin: false,csrfToken: req.csrfToken()})
          }
     }
     catch(err){
@@ -123,6 +128,10 @@ console.log(err)
   const edit_post= async (req,res)=>{
         try{
             const id = req.params.id;
+            if(!mongoose.Types.ObjectId.isValid(id)){
+              res.redirect('back');
+              return;
+         }
             const editPost = await Post.findById(id);
             res.render('edit_post', {title: 'edit_post', editPost,csrfToken: req.csrfToken()})
         }
@@ -134,6 +143,10 @@ console.log(err)
   const editPost_put = async (req,res)=>{
     try{
         const id = req.params.id;
+        if(!mongoose.Types.ObjectId.isValid(id)){
+          res.redirect('back');
+          return;
+     }
         const toBEditedPost = await Post.findByIdAndUpdate(id);
 
         toBEditedPost.name = req.body.name;
@@ -151,6 +164,10 @@ console.log(err)
   const deletePost = async (req,res)=>{
     try{
          const id = req.params.id;
+         if(!mongoose.Types.ObjectId.isValid(id)){
+          res.redirect('back');
+          return;
+     }
          await Post.findByIdAndDelete(id);
          res.redirect('/')
     }
@@ -181,7 +198,7 @@ console.log(err)
       } else{
           theImage = req.files.image ; // replace body with files - grabbing the image file from the form
            imageName = theImage.name;
-          uploadPath = require('path').resolve('./') + '/public/images' + imageName;
+          uploadPath = require('path').resolve('./') + '/public/' + imageName;
           
          theImage.mv(uploadPath, function(err){
           if(err){
@@ -215,6 +232,10 @@ const privacyPage = (req, res) => {
 const editCategory_get = async(req,res)=>{
    try{
     const id = req.params.id
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      res.redirect('back');
+      return;
+ }
     const toBeEditedCategory = await Category.findById(id);
     // console.log(id);
     res.render('editCategory', {title: 'edit_category', toBeEditedCategory, csrfToken: req.csrfToken()});
@@ -237,7 +258,7 @@ const editCategory_put = async(req,res)=>{
   } else{
       theImage = req.files.image ; // replace body with files - grabbing the image file from the form
        imageName = theImage.name;
-      uploadPath = require('path').resolve('./') + '/public/images' + imageName;
+      uploadPath = require('path').resolve('./') + '/public/' + imageName;
       
      theImage.mv(uploadPath, function(err){
       if(err){
@@ -250,6 +271,10 @@ const editCategory_put = async(req,res)=>{
 try{
    
    const id = req.params.id
+   if(!mongoose.Types.ObjectId.isValid(id)){
+    res.redirect('back');
+    return;
+}
    const editedCategory = await Category.findByIdAndUpdate(id);
    editedCategory.name = req.body.name;
    editedCategory.body = req.body.body;
@@ -268,6 +293,10 @@ console.log(err)
 const deleteCategory = async (req,res)=>{
   try{
       const id = req.params.id;
+      if(!mongoose.Types.ObjectId.isValid(id)){
+        res.redirect('back');
+        return;
+   }
     //  res.send(id)
       const catDelete = await Category.findByIdAndDelete(id)
       res.redirect('/')
